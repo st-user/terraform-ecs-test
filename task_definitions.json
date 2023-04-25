@@ -1,0 +1,38 @@
+[
+	{
+	  "essential": true,
+	  "name": "app",
+	  "image": "${appImageURL}",
+	  "portMappings": [
+		{
+		  "protocol": "tcp",
+		  "containerPort": 8081
+		}
+	  ],
+	  "memoryReservation": 100,
+	  "logConfiguration": {
+		"logDriver": "awsfirelens"
+	  }
+	},
+	{
+	  "essential": true,
+	  "name": "log_router",
+	  "image": "${fluentBitImageURL}",
+	  "memoryReservation": 50,
+	  "logConfiguration": {
+		"logDriver": "awslogs",
+		"options": {
+		  "awslogs-group": "/ecs/firelens",
+		  "awslogs-region": "ap-northeast-1",
+		  "awslogs-stream-prefix": "sidecar"
+		}
+	  },
+	  "firelensConfiguration": {
+		"type": "fluentbit",
+		"options": {
+		  "config-file-type": "file",
+		  "config-file-value": "/fluent-bit/etc/extra.conf"
+		}
+	  }
+	}
+  ]
