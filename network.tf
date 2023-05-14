@@ -113,4 +113,20 @@ resource "aws_security_group" "fluentbit_dev_internal_sg" {
   }
 }
 
+##################
+# Workder
+##################
 
+# make security group resource on vpc 'fluentbit_dev'
+# and allow egress trafic to anywhere 
+resource "aws_security_group" "sqs_worker_sg" {
+  name   = "sqs_worker_sg"
+  vpc_id = aws_vpc.fluentbit_dev.id
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}

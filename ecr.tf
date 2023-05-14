@@ -7,3 +7,10 @@ data "aws_ecr_repository" "fluentbit_dev_my_firelens" {
 data "aws_ecr_repository" "fluentbit_dev_app" {
   name = "fluentbit-dev-app"
 }
+
+##########################
+# Worker
+##########################
+data "aws_ecr_repository" "sqs_worker_test" {
+  name = "sqs-worker-test"
+}
