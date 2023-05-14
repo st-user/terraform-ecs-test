@@ -14,3 +14,8 @@ variable "github_webhook_secret_token" {
 variable "github_oauth_token" {
   type    = string
 }
+
+variable "sqs_worker_queue_name" {
+  type    = string
+  default = "HelloQueue"
+}

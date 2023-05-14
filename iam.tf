@@ -80,6 +80,72 @@ resource "aws_iam_role_policy_attachment" "attach_ecs_task_execution_role" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy"
 }
 
+##############
+# Worker ECS task role
+##############
+
+# make IAM policy document enabling ECS task to write to CloudWatch log group named "sqs-worker-ecs-group"
+data "aws_iam_policy_document" "ecs_worker_task_cloudwatch_logs" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "logs:PutLogEvents",
+      "logs:DescribeLogStreams",
+    ]
+    resources = [
+      "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/ecs/logs/sqs-worker-ecs-group:*",
+    ]
+  }
+}
+
+# make IAM policy document enabling ECS task to pull messages from SQS quene named "fluentbit-dev-ecs-queue"
+data "aws_iam_policy_document" "ecs_worker_task_sqs" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "sqs:ReceiveMessage",
+      "sqs:DeleteMessage",
+    ]
+    resources = [
+      "arn:aws:sqs:${var.aws_region}:${var.aws_account_id}:${var.sqs_worker_queue_name}",
+    ]
+  }
+}
+
+# make IAM policy resource with "ecs_worker_task_cloudwatch_logs" policy document
+resource "aws_iam_policy" "ecs_worker_task_cloudwatch_logs" {
+  name        = "sqs-worker-ecs-task-cloudwatch-logs"
+  description = "IAM policy for ECS task to write to CloudWatch log group named sqs-worker-ecs-group"
+  policy      = data.aws_iam_policy_document.ecs_worker_task_cloudwatch_logs.json
+}
+
+# make IAM policy resource with "ecs_worker_task_sqs" policy document
+resource "aws_iam_policy" "ecs_worker_task_sqs" {
+  name        = "sqs-worker-ecs-task-sqs"
+  description = "IAM policy for ECS task to pull messages from SQS quene"
+  policy      = data.aws_iam_policy_document.ecs_worker_task_sqs.json
+}
+
+# make IAM role for ECS task
+resource "aws_iam_role" "ecs_worker_task" {
+  name               = "sqs-worker-ecs-task"
+  assume_role_policy = data.aws_iam_policy_document.ecs_task_assume_role.json
+}
+
+# attach IAM policy "ecs_worker_task_cloudwatch_logs" to IAM role "ecs_worker_task"
+resource "aws_iam_role_policy_attachment" "attach_ecs_worker_task_cloudwatch_logs" {
+  role       = aws_iam_role.ecs_worker_task.name
+  policy_arn = aws_iam_policy.ecs_worker_task_cloudwatch_logs.arn
+}
+
+# attach IAM policy "ecs_worker_task_sqs" to IAM role "ecs_worker_task"
+resource "aws_iam_role_policy_attachment" "attach_ecs_worker_task_sqs" {
+  role       = aws_iam_role.ecs_worker_task.name
+  policy_arn = aws_iam_policy.ecs_worker_task_sqs.arn
+}
+
+
+
 
 ##############
 
