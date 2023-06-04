@@ -34,5 +34,20 @@
 		  "config-file-value": "/fluent-bit/etc/extra.conf"
 		}
 	  }
-	}
+	},
+	{
+		"essential": true,
+		"name": "appconfig_sidecar",
+		"image": "public.ecr.aws/aws-appconfig/aws-appconfig-agent:2.x",
+		"portMappings": [
+		  {
+			"protocol": "tcp",
+			"containerPort": 2772
+		  }
+		],
+		"memoryReservation": 100,
+		"logConfiguration": {
+		  "logDriver": "awsfirelens"
+		}
+	  }
   ]

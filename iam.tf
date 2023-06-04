@@ -262,3 +262,33 @@ resource "aws_iam_role_policy" "codepipeline_iam_policy" {
   role   = aws_iam_role.codepipeline_iam_role.id
   policy = data.aws_iam_policy_document.codepipeline_iam_policy_document.json
 }
+
+
+###################
+# AppConfig
+###################
+# make IAM policy document 
+# enabling action for AppConfig GetLatestConfiguration and StartConfigurationSession
+data "aws_iam_policy_document" "appconfig_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "appconfig:GetLatestConfiguration",
+      "appconfig:StartConfigurationSession",
+    ]
+    resources = ["arn:aws:appconfig:${var.aws_region}:${var.aws_account_id}:*"]
+  }
+}
+
+# make IAM policy for "appconfig_policy"
+resource "aws_iam_policy" "appconfig_policy" {
+  name        = "appconfig_policy"
+  description = "appconfig_policy"
+  policy      = data.aws_iam_policy_document.appconfig_policy.json
+}
+
+# attach appconfig_policy to the IAM role
+resource "aws_iam_role_policy_attachment" "appconfig_policy_attachment" {
+  role       = aws_iam_role.ecs_task.name
+  policy_arn = aws_iam_policy.appconfig_policy.arn
+}
