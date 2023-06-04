@@ -3,6 +3,11 @@ resource "aws_cloudwatch_log_group" "fluentbit-dev-ecs-group" {
   name = "/ecs/logs/fluentbit-dev-ecs-group"
 }
 
+# make CloudWatch log group named "fluentbit-dev-ecs-group"
+resource "aws_cloudwatch_log_group" "fluentbit-dev-ecs-appconfig-sidecar-group" {
+  name = "/ecs/logs/fluentbit-dev-ecs-appconfig-sidecar-group"
+}
+
 # make CloudWatch log stream named "from-fluentbit"
 resource "aws_cloudwatch_log_stream" "from-fluentbit" {
   name           = "from-fluentbit"
@@ -12,7 +17,7 @@ resource "aws_cloudwatch_log_stream" "from-fluentbit" {
 # make CloudWatch log stream named "from-fluentbit"
 resource "aws_cloudwatch_log_stream" "from_appconfig_sidecar" {
   name           = "from-appconfig-sidecar"
-  log_group_name = aws_cloudwatch_log_group.fluentbit-dev-ecs-group.name
+  log_group_name = aws_cloudwatch_log_group.fluentbit-dev-ecs-appconfig-sidecar-group.name
 }
 
 # make CloudWatch log group named "/ecs/firelens"

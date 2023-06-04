@@ -8,6 +8,7 @@ data "aws_iam_policy_document" "ecs_task_cloudwatch_logs" {
     ]
     resources = [
       "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/ecs/logs/fluentbit-dev-ecs-group:*",
+      "arn:aws:logs:${var.aws_region}:${var.aws_account_id}:log-group:/ecs/logs/fluentbit-dev-ecs-appconfig-sidecar-group:*",
     ]
   }
 }
