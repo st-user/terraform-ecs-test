@@ -33,3 +33,8 @@ resource "aws_lb_listener" "fluentbit_dev_listener" {
     type             = "forward"
   }
 }
+
+# Output ALB url
+output "fluentbit_dev_alb_url" {
+  value = aws_lb.fluentbit_dev_alb.dns_name
+}
