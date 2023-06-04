@@ -38,7 +38,7 @@ resource "aws_cloudwatch_log_metric_filter" "sidecar_metric_filter" {
   metric_transformation {
     name = "ErrorCount"
     namespace = "SideCarErrorCount"
-    value = "1"
+    value = 1
   }
 }
 
@@ -46,12 +46,12 @@ resource "aws_cloudwatch_log_metric_filter" "sidecar_metric_filter" {
 resource "aws_cloudwatch_metric_alarm" "sidecar_metric_alarm" {
   alarm_name = "sidecar_metric_alarm"
   comparison_operator = "GreaterThanOrEqualToThreshold"
-  evaluation_periods = "1"
+  evaluation_periods = 1
   metric_name = "ErrorCount"
   namespace = "SideCarErrorCount"
-  period = "60"
+  period = "10"
   statistic = "Sum"
-  threshold = "1"
+  threshold = 1
   alarm_description = "This metric monitors SideCarErrorCount"
   alarm_actions = [aws_sns_topic.fluentbit_dev_sns_topic.arn]
   treat_missing_data= "notBreaching"
