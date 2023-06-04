@@ -293,3 +293,57 @@ resource "aws_iam_role_policy_attachment" "appconfig_policy_attachment" {
   role       = aws_iam_role.ecs_task.name
   policy_arn = aws_iam_policy.appconfig_policy.arn
 }
+
+
+#######################
+# Chatbot
+#######################
+# make IAM policy document for Chatbot
+data "aws_iam_policy_document" "chatbot_policy" {
+  statement {
+    effect = "Allow"
+    actions = [
+      "cloudwatch:Describe*",
+      "cloudwatch:Get*",
+      "cloudwatch:List*"
+    ]
+    resources = ["*"]
+  }
+}
+
+# make IAM Assume Role policy for AWS Chatbot
+data "aws_iam_policy_document" "chatbot_assume_role" {
+  statement {
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["chatbot.amazonaws.com"]
+    }
+  }
+}
+
+# make IAM policy for "chatbot_policy"
+resource "aws_iam_policy" "chatbot_policy" {
+  name        = "chatbot_policy"
+  description = "chatbot_policy"
+  policy      = data.aws_iam_policy_document.chatbot_policy.json
+}
+
+# make IAM role for AWS Chatbot
+resource "aws_iam_role" "chatbot_role" {
+  name               = "chatbot_role"
+  assume_role_policy = data.aws_iam_policy_document.chatbot_assume_role.json
+}
+
+# attach "chatbot_policy" to "chatbot_role"
+resource "aws_iam_role_policy_attachment" "chatbot_policy_attachment" {
+  role       = aws_iam_role.chatbot_role.name
+  policy_arn = aws_iam_policy.chatbot_policy.arn
+}
+
+# attach AWS managed policy "AWSResourceExplorerReadOnlyAccess" to "chatbot_role"
+resource "aws_iam_role_policy_attachment" "chatbot_managed_policy_attachment" {
+  role       = aws_iam_role.chatbot_role.name
+  policy_arn = "arn:aws:iam::aws:policy/AWSResourceExplorerReadOnlyAccess"
+}
